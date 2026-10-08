@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Randinap kérdések 💛</title>
+<style>
+:root{--bg1:#fff1e6;--bg2:#ffd9e4;--card:#fffaf5;--ink:#4a2c3a;--soft:#9a7384;--accent:#ff7a93;--accent2:#ffb36b;--shadow:rgba(255,122,147,.25);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#2a1824;--bg2:#3b1f33;--card:#3d2535;--ink:#ffe9ef;--soft:#d3a5b6;--shadow:rgba(0,0,0,.4)}}
+:root[data-theme="dark"]{--bg1:#2a1824;--bg2:#3b1f33;--card:#3d2535;--ink:#ffe9ef;--soft:#d3a5b6;--shadow:rgba(0,0,0,.4)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:"Quicksand","Nunito","Segoe UI",system-ui,sans-serif;color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:18px;overflow-x:hidden}
+.floaters{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.floaters span{position:absolute;bottom:-40px;opacity:.5;animation:up linear infinite}
+@keyframes up{to{transform:translateY(-115vh) rotate(25deg);opacity:0}}
+.wrap{position:relative;width:100%;max-width:460px;text-align:center}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:2rem;margin:.2em 0 .1em}
+.sub{color:var(--soft);margin:0 0 22px;line-height:1.5}
+.card{background:var(--card);border-radius:28px;padding:28px 22px;box-shadow:0 18px 40px var(--shadow);position:relative}
+.emoji{font-size:3.2rem;display:block;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px) rotate(-4deg)}}
+input{width:100%;padding:13px 16px;border-radius:16px;border:2px solid transparent;background:var(--bg1);color:var(--ink);font:inherit;margin:6px 0;outline:none}
+input:focus{border-color:var(--accent)}
+button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:14px 26px;cursor:pointer;transition:transform .15s}
+button:active{transform:scale(.96)}
+.main{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 8px 18px var(--shadow);width:100%;margin-top:14px}
+.ghost{background:transparent;color:var(--soft);padding:10px 14px;margin-top:6px}
+.bar{height:8px;border-radius:9px;background:var(--bg1);overflow:hidden;margin-bottom:18px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s}
+.num{color:var(--soft);font-size:.85rem;letter-spacing:.12em;text-transform:uppercase}
+.q{font-family:Georgia,serif;font-size:1.4rem;line-height:1.4;margin:14px 0 18px;min-height:7.5em;display:flex;align-items:center;justify-content:center}
+.turn{display:inline-block;background:var(--bg1);padding:8px 16px;border-radius:999px;font-size:.92rem}
+.turn b{color:var(--accent)}
+.pop{animation:pop .45s ease}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.96)}}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="floaters" id="fl"></div>
+<div class="wrap">
+
+<div id="start" class="card pop">
+  <span class="emoji">💛</span>
+  <h1>Randinap kérdések</h1>
+  <p class="sub">30 kérdés, sok nevetés, semmi komolykodás.<br>Ma csak mi ketten vagyunk, a világ várhat.</p>
+  <input id="n1" placeholder="Első név" maxlength="20">
+  <input id="n2" placeholder="Második név" maxlength="20">
+  <button class="main" onclick="begin()">Kezdjük! ✨</button>
+</div>
+
+<div id="game" class="card hidden">
+  <div class="bar"><i id="pb"></i></div>
+  <div class="num" id="num"></div>
+  <div class="q" id="q"></div>
+  <div class="turn" id="turn"></div>
+  <button class="main" onclick="next()" id="nb">Következő kérdés 💫</button>
+  <button class="ghost" onclick="swap()">Inkább egy másikat 🔀</button>
+</div>
+
+<div id="end" class="card hidden">
+  <span class="emoji">🥰</span>
+  <h1>Ez nagyon jó volt!</h1>
+  <p class="sub" id="endmsg"></p>
+  <button class="main" onclick="restart()">Még egy kör? 🔁</button>
+</div>
+
+</div>
+<script>
+const Q=["Ha most azonnal bárhová teleportálhatnánk, hová mennél? 🌍","Melyik lenne a legrosszabb munka számodra? 😅","Ha lenne egy saját éttermed, mi lenne a neve és mit lehetne ott enni? 🍝","Melyik film világában élnél egy hétig? 🎬","Ha 10 millió forintot kellene 24 óra alatt elköltened, mire menne el? 💸","Mi az a teljesen értelmetlen dolog, amiben szerinted meglepően jó vagy? 🏆","Ha egy állat lennél egy napig, melyik lennél? 🦦","Melyik hírességgel mennél el egy teljesen átlagos péntek estére? 🌟","Mi lenne a legrosszabb név egy gyereknek? 😂","Ha holnap egy teljesen új szakmában kellene dolgoznod, mi lenne az? 👷","Melyik három dolgot vinnéd magaddal egy lakatlan szigetre? 🏝️","Mi volt gyerekkorod egyik legfurább mániája? 🧸","Ha lehetne egy szuperképességed, de csak egy teljesen hétköznapi dologra használhatnád, mi lenne? 🦸","Melyik kaját tudnád enni egy egész héten? 🍕","Ha lenne egy saját fesztiválod, mi lenne a neve? 🎪","Melyik közös sztorinkon nevettél a legtöbbet? 😆","Ha egy napra visszamehetnél bármelyik életkorodba, melyik lenne? ⏳","Melyik film vagy sorozat szereplőjével cserélnél életet? 🎭","Mi az a dolog, amit mindenki szeret, de te egyáltalán nem értesz? 🤔","Ha holnap reggel egy teljesen más országban ébrednénk, hol szeretnél lenni? ✈️","Melyik lenne a tökéletes „semmittevős” napod? 🛋️","Ha egy hónapig nem kellene dolgoznod, mivel töltenéd? 🌴","Melyik volt életed egyik legjobb spontán döntése? 🎲","Ha csak egyféle édességet ehetnél életed végéig, mi lenne? 🍰","Melyikünk élné túl tovább egy zombiapokalipszisben? 🧟","Ha készülne egy film az életedről, ki játszana téged? 🎥","Mi az a hely, ahová szerinted egyszer mindenképpen el kell jutnunk? 🗺️","Ha lenne egy teljesen felesleges világrekordod, mi lenne az? 📏","Mi az a kis hétköznapi dolog, amitől rögtön jobb kedved lesz? ☕","Ha most kapnál egy teljesen szabad, kötelezettségek nélküli napot, hogyan telne? 🌈"];
+const $=id=>document.getElementById(id);
+let deck=[],pool=[],i=0,names=["",""],total=Q.length;
+function shuffle(a){a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.random()*(k+1)|0;[a[k],a[j]]=[a[j],a[k]]}return a}
+function show(id){["start","game","end"].forEach(x=>$(x).classList.toggle("hidden",x!==id));$(id).classList.remove("pop");void $(id).offsetWidth;$(id).classList.add("pop")}
+function begin(){names=[$("n1").value.trim()||"Te",$("n2").value.trim()||"Én"];deck=shuffle(Q);i=0;show("game");render()}
+function render(){
+  $("num").textContent=(i+1)+" / "+total;
+  $("pb").style.width=(i/total*100)+"%";
+  $("q").textContent=deck[i];
+  const first=names[i%2],second=names[(i+1)%2];
+  $("turn").innerHTML="<b>"+esc(first)+"</b> válaszol először 💬";
+  $("nb").textContent=i===total-1?"Befejezés 💞":"Következő kérdés 💫";
+  const q=$("q");q.classList.remove("pop");void q.offsetWidth;q.classList.add("pop");
+}
+function next(){i++;if(i>=total){$("endmsg").textContent="Mind a "+total+" kérdésen túl vagyunk. Köszönöm, hogy rám szántad ezt az időt, "+names[0]+" és "+names[1]+". Jó veletek lenni egy kicsit másképp. ❤️";show("end")}else render()}
+function swap(){if(i<total-1){const j=i+1+(Math.random()*(total-i-1)|0);[deck[i],deck[j]]=[deck[j],deck[i]];render()}}
+function restart(){show("start")}
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+(function(){const e=["💛","💕","✨","🌸","🧡","💫"],f=$("fl");for(let k=0;k<16;k++){const s=document.createElement("span");s.textContent=e[k%e.length];s.style.left=Math.random()*100+"%";s.style.fontSize=14+Math.random()*18+"px";s.style.animationDuration=9+Math.random()*10+"s";s.style.animationDelay=-Math.random()*12+"s";f.appendChild(s)}})();
+</script>
+</body>
+</html>
